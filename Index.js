@@ -3,57 +3,64 @@ var unzip = require("unzip")
 var path = require('path');
 var FileHound = require("fileHound")
 
-
 var searchDirectory = 'D:/Projects/NodeTest/';
 var outPutDirectory = 'D:/Projects/NodeTest/Output/';
 
 var zips = getZips(searchDirectory);
-
 extract(zips);
+var files = FileHound.create().paths(outPutDirectory).ext('.dll').find()
 
-var files = FileHound.create()
-    .paths(outPutDirectory).ext('.dll').find()
+files.then(getSameNamedDlls);
 
-files.then(checkVersions);
-var e = 0;
-function checkVersions(files) {
+var duplicates = [];
+
+function getSameNamedDlls(files) {
     var dlls = [];
-
+   
     files.forEach(function (file) {
         var dll = { path: file, name: path.basename(file), properties: fs.statSync(file) }
         dlls.push(dll)
+    })     
+
+    var getDups = new Promise((resolve, reject) => {
+    //dlls.forEach(d => d.version = getVersion(d))        
+    dlls[0].version = getVersion(dlls[0]).then(function(){resolve(dlls)})   
+    //resolve("test")            
     })
-
-    var duplicates = [];
-
-    dlls.forEach(function (dll) {            
+    
+    getDups.then(function(input){  
+        console.log(input) 
+        console.log("test") 
+        dlls.forEach(function (dll) {            
            for (var i = 0; i < dlls.length; i++){
                if (duplicates.find(x => x.path === dll.path) != null) {continue;} //Dll already in dups
                if (dll.name !== dlls[i].name){continue;} // skip if not named the same
-               if (dll.path === dlls[i].path){continue;} //skip if same dll
-               if (dll.properties.size === dlls[i].properties.size){continue;}
-               
+               if (dll.path === dlls[i].path){continue;} //skip if same dll  
+               //check version             
                duplicates.push(dll)              
-           }
-        
-        // for (var i = 0; i < dlls.length; i++) {
-        //     if (dlls[i].path !== dll.path) {
-        //         if (dlls[i].name === dll.name && dlls[i].properties.size !== dll.properties.size) {                    
-        //             if (dups.find(x => x.path === dll.path) == null) {                         
-        //              dups.push(dlls[i])
-        //             }
-        //         }
-        //     }
-        // }
-        // console.log(dups)
-        // if (dups.length >= 0) { //will also find one in the array (itself)
-          
-        // }
-
-        // var f = fileObjs.find(o => o.name === fileObj.name && o.size !== fileObj.properties.size)
-        //console.log(f)
+           }               
     })
-    duplicates.forEach(d => console.log(d.path))
+    });
+
+}
+
+function getVersion(dll){
+    const shell = require('node-powershell'); 
+    var ps = new shell({
+    executionPolicy: 'Bypass',
+    noProfile: true
+    });  
+
+    ps.addCommand('[System.Diagnostics.FileVersionInfo]::GetVersionInfo("'+ dll.path + '").ProductVersion')
+    return ps.invoke()
+        .then(version => {  
+        dll.version = version;   
+        ps.dispose()                   
+        })
+        .catch(err => {
+        console.log(err);   
+         ps.dispose()             
+    })
 }
 
 function getZips(directory) {

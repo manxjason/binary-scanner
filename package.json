@@ -9,6 +9,9 @@
   "author": "Jason Callister",
   "license": "MIT",
   "dependencies": {
-    "filehound": "^1.16.2"
+    "bin-version": "^2.0.0",
+    "bin-version-check": "^3.0.0",
+    "filehound": "^1.16.2",
+    "node-powershell": "^3.1.1"
   }
 }
