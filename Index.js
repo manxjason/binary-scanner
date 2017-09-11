@@ -3,8 +3,10 @@ var unzip = require("unzip")
 var path = require('path');
 var FileHound = require("fileHound")
 
-var searchDirectory = 'D:/Projects/NodeTest/';
-var outPutDirectory = 'D:/Projects/NodeTest/Output/';
+var root = process.cwd() + '\\'
+
+var searchDirectory = root
+var outPutDirectory = root + '\\';
 
 var zips = getZips(searchDirectory);
 extract(zips);
@@ -26,24 +28,24 @@ function getSameNamedDlls(files) {
     var results = Promise.all(actions); // pass array of promises
     results.then(function(dlls){
         
-            dlls.forEach(function (dll) {            
+        dlls.forEach(function (dll) {            
            for (var i = 0; i < dlls.length; i++){
                if (duplicates.find(x => x.path === dll.path) != null) {continue;} //Dll already in dups
                if (dll.name !== dlls[i].name){continue;} // skip if not named the same
                if (dll.path === dlls[i].path){continue;} //skip if same dll  
                if (dll.version === dlls[i].version){continue;} //skip if same dll  
-               //check version             
                duplicates.push(dll)              
            }               
     })    
-    duplicates.forEach(d => console.log(d.path))
+    duplicates.forEach(d => console.log(d.path + ' | ' + d.version))
 });}
 
 function getVersion(dll){
     const shell = require('node-powershell'); 
     var ps = new shell({
     executionPolicy: 'Bypass',
-    noProfile: true
+           noProfile: true,
+           debugMsg: false
     });  
 
     ps.addCommand('[System.Diagnostics.FileVersionInfo]::GetVersionInfo("'+ dll.path + '").ProductVersion')
