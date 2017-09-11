@@ -1,0 +1,8 @@
+logs
+*.log
+*.sln
+*.usr
+*.sqlproj
+*.sqlproj.user
+*.suo
+node_modules/
