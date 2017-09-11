@@ -35,28 +35,8 @@ function getSameNamedDlls(files) {
                //check version             
                duplicates.push(dll)              
            }               
-    })
-    
+    })    
     duplicates.forEach(d => console.log(d.path))
-    // var getDups = new Promise((resolve, reject) => {
-    // //dlls.forEach(d => d.version = getVersion(d).then(function(){resolve(dlls)}))
-    // dlls[0].version = getVersion(dlls[0]).then(function(){resolve(dlls)}) 
-    // //resolve("test")            
-    // })
-    
-    // getDups.then(function(input){  
-    //     //console.log(input) 
-    //     dlls.forEach(function (dll) {            
-    //        for (var i = 0; i < dlls.length; i++){
-    //            if (duplicates.find(x => x.path === dll.path) != null) {continue;} //Dll already in dups
-    //            if (dll.name !== dlls[i].name){continue;} // skip if not named the same
-    //            if (dll.path === dlls[i].path){continue;} //skip if same dll  
-    //            //check version             
-    //            duplicates.push(dll)              
-    //        }               
-    // })
-    // });
-
 });}
 
 function getVersion(dll){
