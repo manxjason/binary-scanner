@@ -15,5 +15,9 @@
     "filehound": "^1.16.2",
     "node-powershell": "^3.1.1",
     "unzip": "^0.1.11"
+  },
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/manxjason/binary-scanner.git"
   }
 }
