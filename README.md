@@ -9,4 +9,4 @@ Need to compare .dll version numbers?
 ## Usage
 In a directory that contains your .zip files:
 
-scan
+`scan`
