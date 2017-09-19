@@ -1,27 +1,38 @@
+#!/usr/bin/env node
+
 var fs = require('fs')
 var unzip = require("unzip")
 var path = require('path');
-var FileHound = require("fileHound")
+var fileHound = require("fileHound")
 
 var root = process.cwd() + '\\'
 
-var searchDirectory = "C:\\temp\\Dep 3089\\"
-var outPutDirectory = "C:\\temp\\Dep 3089\\"
-
-var zips = getZips(searchDirectory);
+var searchDirectory = root
+var outPutDirectory = root + "\\Output\\"
 
 var unzippedCount = 0;
+var duplicates = [];
+
+var zips = getZips(searchDirectory);
+if (zips.length === 0) {
+    console.log("No zip files present in the current working directory.")
+    process.exit()
+}
+
+console.log("Extracting " + zips.length + " .zip files...")
 extract(0);
 
-function checkVers() {
-    var files = FileHound.create().paths(outPutDirectory).ext('.dll').find()
+function findDuplicationVersions() {
+   var files = fileHound.create().paths(outPutDirectory).ext('.dll').find()    
     files.then(getSameNamedDlls);
 }
 
-
-var duplicates = [];
-
 function getSameNamedDlls(files) {
+    if (files.length == 0){
+        console.log("Unable to locate any .dll files.")
+        process.exit()
+    }
+    console.log("Scanning for multiple versions...")    
     var dlls = [];
 
     files.forEach(function (file) {
@@ -29,13 +40,13 @@ function getSameNamedDlls(files) {
         dlls.push(dll)
     })
 
-dlls.sort(function(a, b) {
-    var textA = a.name
-    var textB = b.name
-    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-});
+    dlls.sort(function (a, b) {
+        var textA = a.name
+        var textB = b.name
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
 
-    var actions = dlls.map(getVersion);
+    var actions = dlls.map(getVersionUsingPowershell);
     var results = Promise.all(actions); // pass array of promises
     results.then(function (dlls) {
 
@@ -48,11 +59,15 @@ dlls.sort(function(a, b) {
                 duplicates.push(dll)
             }
         })
+        if (duplicates.length === 0){
+            console.log("No duplcate versions found.")
+            process.exit()
+        }
         duplicates.forEach(d => console.log(d.path + ' | ' + d.version))
     });
 }
 
-function getVersion(dll) {
+function getVersionUsingPowershell(dll) {
     const shell = require('node-powershell');
     var ps = new shell({
         executionPolicy: 'Bypass',
@@ -89,14 +104,14 @@ function extract() {
     var combined = searchDirectory + zip;
     var fileNameNoExt = zip.replace('.zip', "");
     fs.createReadStream(combined).pipe(unzip.Extract({ path: outPutDirectory + fileNameNoExt })).on('close', function (e) {
-        CheckNextUnzip();
+        tryUnzipNext();
     })
 }
 
-function CheckNextUnzip() {
+function tryUnzipNext() {
     unzippedCount++;
     if (unzippedCount >= zips.length) {
-        checkVers()
+        findDuplicationVersions()
     } else {
         extract()
     }
