@@ -3,10 +3,10 @@ Command line utility that extracts .zip files and scans contents for duplicate .
 
 Need to compare .dll version numbers?
 
-##Install
+## Install
 `npm install -g binary-scanner`
 
-##Usage
+## Usage
 In a directory that contains your .zip files:
 
 scan
