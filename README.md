@@ -1,12 +1,17 @@
 # binary-scanner
-Command line utility that extracts .zip files and scans contents for duplicate .dll versions.
+A simple command-line utility that extracts one or more .zip files and locates where multiple versions of the same .dll exists.
 
-Need to compare .dll version numbers?
+
+## Why use this?
+Had a problem with a recent deployment? Need to compare the application backup vs deployment package? Worried that your binaries are being incorrectly overwritten?
+
 
 ## Install
 `npm install -g binary-scanner`
 
 ## Usage
-In a directory that contains your .zip files:
+Using your CLI of choice:
 
-`scan`
+1. `cd directory/containing/zip/file(s)`
+
+2. `scan`

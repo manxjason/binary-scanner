@@ -1,6 +1,6 @@
 {
   "name": "binary-scanner",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Extracts .zip files and iterates through output for mutliple versions of a .dll file.",
   "main": "index.js",
   "scripts": {
